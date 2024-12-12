@@ -1,5 +1,8 @@
-resource "aws_instance" "prod_instance" {
-ami = "ami-053b12d3152c0cc71"
-instance_type = "t2.nano"
-subnet_id = "0befd88457a8ccab3"
+provider "aws" {
+  region= "us-east-1" 
+}
+resource "aws_instance" "cache_instance01" {
+ami = "ami-0e2c8caa4b6378d8c"
+instance_type = "t2.micro"
+subnet_id = "subnet-03b09ae82ec9cd558"
 }
