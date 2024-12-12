@@ -12,3 +12,5 @@ hooks:
     post:
       - type: run
         cmd: ['aws', 's3', 'sync', '/tmp/tf_cache_dir', 's3://terraform-terratream-cache']
+        args:
+          - debug
