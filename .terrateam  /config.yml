@@ -4,15 +4,41 @@ hooks:
       - type: run
         cmd: ['echo', 'Pre-plan hook started']
       - type: run
-        cmd: ['mkdir', '-p', '/tmp/tf_cache_dir']
+        cmd: ['mkdir', '-p', '/tmp/tf_cache_dir/providers']  # Create cache directory structure
       - type: run
-        cmd: ['ls', '-la', '/tmp']
+        cmd: ['echo', 'Syncing plugins from S3 to local cache']
       - type: run
-        cmd: ['aws', 's3', 'sync', 's3://terraform-terratream-cache', '/tmp/tf_cache_dir']
+        cmd: ['aws', 's3', 'sync', 's3://terraform-terratream-cache/providers', '/tmp/tf_cache_dir/providers']  # Sync plugins
+      - type: run
+        cmd: ['ls', '-la', '/tmp/tf_cache_dir/providers']  # Debug: Check cache contents
     post:
       - type: run
         cmd: ['echo', 'Post-plan hook started']
       - type: run
-        cmd: ['ls', '-la', '/tmp/tf_cache_dir']
+        cmd: ['ls', '-la', '/tmp/tf_cache_dir/providers']  # Debug: Verify changes in cache
       - type: run
-        cmd: ['aws', 's3', 'sync', '/tmp/tf_cache_dir', 's3://terraform-terratream-cache']
+        cmd: ['echo', 'Syncing updated plugins back to S3']
+      - type: run
+        cmd: ['aws', 's3', 'sync', '/tmp/tf_cache_dir/providers', 's3://terraform-terratream-cache/providers']  # Sync back to S3
+
+  apply:
+    pre:
+      - type: run
+        cmd: ['echo', 'Pre-apply hook started']
+      - type: run
+        cmd: ['mkdir', '-p', '/tmp/tf_cache_dir/providers']  # Ensure cache directory exists
+      - type: run
+        cmd: ['echo', 'Syncing plugins from S3 to local cache']
+      - type: run
+        cmd: ['aws', 's3', 'sync', 's3://terraform-terratream-cache/providers', '/tmp/tf_cache_dir/providers']  # Sync plugins for apply
+      - type: run
+        cmd: ['ls', '-la', '/tmp/tf_cache_dir/providers']  # Debug: Check cache contents
+    post:
+      - type: run
+        cmd: ['echo', 'Post-apply hook started']
+      - type: run
+        cmd: ['ls', '-la', '/tmp/tf_cache_dir/providers']  # Debug: Verify changes in cache
+      - type: run
+        cmd: ['echo', 'Syncing updated plugins back to S3']
+      - type: run
+        cmd: ['aws', 's3', 'sync', '/tmp/tf_cache_dir/providers', 's3://terraform-terratream-cache/providers']  # Sync back to S3
