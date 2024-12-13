@@ -1,4 +1,9 @@
 hooks:
+  all:
+    pre:
+      - type: oidc
+        provider: aws
+        role_arn: "arn:aws:iam::975050186482:role/terrateam"
   plan:
     pre:
       - type: run
